@@ -7,45 +7,46 @@ from django.urls import reverse
 # my_feild_name = models.Charfield(max_length=20, help_text='Enter field documentation') example of a field/column of data 
 
 class Genre(models.Model):
-    #Model representing a book genre
-
+    """Model representing a book genre."""
     name = models.CharField(
         max_length=200,
-        unique=True, 
+        unique=True,
         help_text="Enter a book genre (e.g. Science Fiction, French Poetry etc.)"
     )
- #String for representing the Model object
-    def _str_(self):
+
+    def __str__(self):
+        """String for representing the Model object."""
         return self.name
-    
-    #return the url to access a particular genre instance. 
+
     def get_absolute_url(self):
+        """Returns the url to access a particular genre instance."""
         return reverse('genre-detail', args=[str(self.id)])
 
-    class Meta: 
-        Constraints = [
+    class Meta:
+        constraints = [
             UniqueConstraint(
                 Lower('name'),
-                name = "genre_name_case_insensitive_unique",
+                name='genre_name_case_insensitive_unique',
                 violation_error_message = "Genre already exists (case insensitive match)"
             ),
         ]
 
         class Book(models.Model):
-            title = models.Chatfield(max_length=200)
+            title = models.CharField(max_length=200)
             author = models.ForeignKey('Author', on_delete=models.RESTRICT, null=True) #used FK because book can only have one author, but author can have many books
-            summary = models.TextField(maxlength=13,
+            summary = models.TextField(max_length = 1000,
                                        unique=True,
-                                       help_text= '13 Character <a href="https://www.isbn-international.org/content/what-isbn')
-            
+                                        help_text='13 Character <a href="https://www.isbn-international.org/content/what-isbn'
+                                      '">ISBN number</a>')
+
             #many to many genrs can contain many books and Books can cover many genres. 
 
             #b.c Genre class has been created we can specify the object above 
 
             genre = models.ManyToManyField(
-                Genre, help_text = "Select a genre for this book")
+                Genre, help_text="Select a genre for this book")
             
-            def _str_(self):
+            def _str_(self): 
                 return self.title
             
             def get_absolute_url(self):
@@ -62,9 +63,9 @@ class BookInstance(models.Model):
     due_back = models.DateField(null=True, blank=True)
 
     LOAN_STATUS = (
-        ('m', 'Maintenance'),
-        ('o', 'On loan'),
         ('a', 'Available'),
+        ('o', 'On loan'),
+        ('m', 'Maintenance'),
         ('r', 'Reserved'),
     )
 
