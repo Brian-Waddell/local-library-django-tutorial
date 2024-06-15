@@ -22,35 +22,35 @@ class Genre(models.Model):
         """Returns the url to access a particular genre instance."""
         return reverse('genre-detail', args=[str(self.id)])
 
-    class Meta:
-        constraints = [
-            UniqueConstraint(
-                Lower('name'),
-                name='genre_name_case_insensitive_unique',
-                violation_error_message = "Genre already exists (case insensitive match)"
-            ),
-        ]
+class Meta:
+    constraints = [
+        UniqueConstraint(
+            Lower('name'),
+            name='genre_name_case_insensitive_unique',
+            violation_error_message = "Genre already exists (case insensitive match)"
+        ),
+    ]
 
-        class Book(models.Model):
-            title = models.CharField(max_length=200)
-            author = models.ForeignKey('Author', on_delete=models.RESTRICT, null=True) #used FK because book can only have one author, but author can have many books
-            summary = models.TextField(max_length = 1000,
-                                       unique=True,
-                                        help_text='13 Character <a href="https://www.isbn-international.org/content/what-isbn'
-                                      '">ISBN number</a>')
+class Book(models.Model):
+    title = models.CharField(max_length=200)
+    author = models.ForeignKey('Author', on_delete=models.RESTRICT, null=True) #used FK because book can only have one author, but author can have many books
+    summary = models.TextField(max_length = 1000,
+                                unique=True,
+                                help_text='13 Character <a href="https://www.isbn-international.org/content/what-isbn'
+                                '">ISBN number</a>')
 
-            #many to many genrs can contain many books and Books can cover many genres. 
+    #many to many genrs can contain many books and Books can cover many genres. 
 
-            #b.c Genre class has been created we can specify the object above 
+    #b.c Genre class has been created we can specify the object above 
 
-            genre = models.ManyToManyField(
-                Genre, help_text="Select a genre for this book")
-            
-            def _str_(self): 
-                return self.title
-            
-            def get_absolute_url(self):
-                return reverse('book-detail', args=[str(self.id)])
+    genre = models.ManyToManyField(
+        Genre, help_text="Select a genre for this book")
+    
+    def _str_(self): 
+        return self.title
+    
+    def get_absolute_url(self):
+        return reverse('book-detail', args=[str(self.id)])
 import uuid # Required for unique book instances
 
 class BookInstance(models.Model):
@@ -83,16 +83,16 @@ class BookInstance(models.Model):
     def __str__(self):
         """String for representing the Model object."""
         return f'{self.id} ({self.book.title})'
-    
-    class Author(models.Model):
-  #model representinv an author
-     first_name = models.charField(max_length =100)
-     last_name = models.CharField(max_length=100)
-     date_of_birth = models.DateField(null = True, blank=True)
-     date_of_death = models.DateField('Died', null = True, blank = True)
 
-    class Meta:
-        ordering = ['last_name', 'first_name']
+class Author(models.Model):
+    #model representinv an author
+    first_name = models.CharField(max_length =100)
+    last_name = models.CharField(max_length=100)
+    date_of_birth = models.DateField(null = True, blank=True)
+    date_of_death = models.DateField('Died', null = True, blank = True)
+
+class Meta:
+    ordering = ['last_name', 'first_name']
 
     def get_absolute_url(self):
         """Returns the URL to access a particular author instance."""
