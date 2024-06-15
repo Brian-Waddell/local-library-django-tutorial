@@ -53,8 +53,8 @@ class Book(models.Model):
         return reverse('book-detail', args=[str(self.id)])
 import uuid # Required for unique book instances
 
-class BookInstance(models.Model):
-
+class LibraryCopy(models.Model):
+    #this model represents a specific copy of a book 
     """Model representing a specific copy of a book (i.e. that can be borrowed from the library)."""
     id = models.UUIDField(primary_key=True, default=uuid.uuid4,
                           help_text="Unique ID for this particular book across whole library")
@@ -101,3 +101,27 @@ class Meta:
     def __str__(self):
         """String for representing the Model object."""
         return f'{self.last_name}, {self.first_name}'
+
+class Language(models.Model):
+    #Books written in different languages i.e English, German, Spanish 
+
+    name = models.CharField(max_length=100, unique=True, help_text="Enter the Language name")
+    #stores lang code e.g., en for enlish de for german ect. 
+    code = models.CharField(max_length=5, help_text= 'Enter the language code')
+    book = models.ForeignKey('Book', on_delete=models.RESTRICT, null=True)
+
+
+
+    class Meta:
+        constraints = [
+            UniqueConstraint(
+                Lower('name'),
+                name='language_name_case_insensitive_unique',
+                violation_error_message = "Language already exists (case insensitive match)"
+            ),
+        ]
+
+    def __str__(self): 
+        return self.title
+    
+     
